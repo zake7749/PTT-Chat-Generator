@@ -1,12 +1,12 @@
 import json
 import os
 
-
 def main():
 
     reader = Reader()
     reader.process_raw_data("data/raw/",is_dir=True)
     reader.print_titles()
+    reader.print_user_info()
 
 class Reader(object):
 
@@ -15,6 +15,7 @@ class Reader(object):
         self.stopwords = None
         self.stoptags = None
         self.titles = []
+        self.users_info = {}
         self.init_load_stopwords()
 
     def init_load_stopwords(self):
@@ -39,16 +40,18 @@ class Reader(object):
 
         for filename in filenames:
             with open(os.path.join(path, filename),'r', encoding="utf-8") as data:
-                res = self.select_articles(json.load(data))
-                f = open("data/processed/"+filename,'w', encoding='utf-8')
-                f.write(json.dumps(res, indent=4, ensure_ascii=False))
-                print("已處理 " + filename)
-                f.close()
 
-    def select_articles(self, articles, drop_response=True, negative_tag=None, no_content=True):
+                res = self.generate_corpus(json.load(data))
+
+                with open("data/processed/"+filename,'w', encoding='utf-8') as op:
+                    op.write(json.dumps(res, indent=4, ensure_ascii=False))
+                    print("已處理 " + filename)
+
+
+    def generate_corpus(self, articles, drop_response=True, negative_tag=None, no_content=True):
 
         """
-        依據需求挑選出需要的文章
+        依據需求挑選出符合語料庫需求的文章
 
         Args:
             - articles: 描述文章的字典，格式參見 PTT-Crawler
@@ -110,14 +113,43 @@ class Reader(object):
         clean_responses = []
 
         for response in responses:
+
+            self._update_users_history(response) # 更新使用者推噓文紀錄
+
             if response["User"] in negative_user or len(response["Content"]) < min_length:
                 continue
             for w in stopwords:
                 if w in response["Content"]:
                     continue
+
             clean_responses.append(response)
 
         return clean_responses
+
+    def _update_users_history(self, response):
+
+        """
+        記錄 user 的推/噓/箭頭
+        """
+
+        user = response["User"]
+
+        if user not in self.users_info.keys():
+
+            res = {
+                "推":0,
+                "噓":0,
+                "箭頭":0
+            }
+            self.users_info[user] = res
+
+        if response["Vote"] == "推":
+            self.users_info[user]["推"] += 1
+        elif response["Vote"] == "噓":
+            self.users_info[user]["噓"] += 1
+        else:
+            self.users_info[user]["箭頭"] += 1
+
 
     def get_tag(self, title):
 
@@ -139,6 +171,13 @@ class Reader(object):
             for title in self.titles:
                 op.write(title + "\n")
 
+    def print_user_info(self):
+        with open('data/User_info.txt','w',encoding='utf-8') as op:
+            op.write(json.dumps(self.users_info, indent=4, ensure_ascii=False))
+
+
+class User(object):
+    pass
 
 class QAPair(object):
 
