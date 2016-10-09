@@ -5,7 +5,8 @@ import os
 def main():
 
     reader = Reader()
-    reader.load_raw_data("data/raw/",is_dir=True)
+    reader.process_raw_data("data/raw/",is_dir=True)
+    reader.print_titles()
 
 class Reader(object):
 
@@ -13,6 +14,7 @@ class Reader(object):
 
         self.stopwords = None
         self.stoptags = None
+        self.titles = []
         self.init_load_stopwords()
 
     def init_load_stopwords(self):
@@ -25,22 +27,23 @@ class Reader(object):
         with open('data/stopwords/gossiping.tag','r', encoding='utf-8') as sw:
             self.stoptags = [word.strip('\n') for word in sw]
 
-    def load_raw_data(self, path, is_dir=False):
+    def process_raw_data(self, path, is_dir=False):
 
         data = []
+        filename = None
 
         if is_dir:
-            for filename in os.listdir(path):
-                with open(os.path.join(path, filename),'r',encoding="utf-8") as data:
-                    res = self.select_articles(json.load(data), negative_tag=[])
-                    f = open("data/processed/"+filename,'w',encoding='utf-8')
-                    f.write(json.dumps(res,indent=4,ensure_ascii=False))
-                    print("已處理 " + filename)
-
+            filenames = [name for name in os.listdir(path)]
         else:
-            with open(path,'r',encoding="utf-8") as data:
-                dic = json.load(data)
-                #TODO
+            filenames = [path]
+
+        for filename in filenames:
+            with open(os.path.join(path, filename),'r', encoding="utf-8") as data:
+                res = self.select_articles(json.load(data))
+                f = open("data/processed/"+filename,'w', encoding='utf-8')
+                f.write(json.dumps(res, indent=4, ensure_ascii=False))
+                print("已處理 " + filename)
+                f.close()
 
     def select_articles(self, articles, drop_response=True, negative_tag=None, no_content=True):
 
@@ -61,7 +64,13 @@ class Reader(object):
 
         for article in articles:
 
-            title = article["Title"]
+            try:
+                #TODO 有些空頁面會造成錯誤 (atricle = {})
+                title = article["Title"]
+            except:
+                print(str(article))
+                continue
+
             if drop_response:
                 if title.startswith("Re") or title.startswith("Fw"):
                     continue
@@ -72,9 +81,12 @@ class Reader(object):
 
             article["Tag"]   = tag
             article["Title"] = title
-            article["Responses"] = self.clean_responses(article["Responses"])
-            if no_content:
-                article.pop("Content")
+            self.titles.append(title)
+
+            if "Responses" in article.keys():
+                article["Responses"] = self.clean_responses(article["Responses"])
+                if no_content:
+                    article.pop("Content")
 
             clean_article.append(article)
 
@@ -112,16 +124,20 @@ class Reader(object):
         """
         回傳文章標籤與清理好的標題
         """
-        
+
         try:
             tag,title = title.split("]",1)
         except:
-            print("發現無標籤標題" + dg)
+            #print("發現無標籤標題: " + title)
             return None,title
 
         title = title.lstrip()
-
         return tag[1:],title
+
+    def print_titles(self):
+        with open('data/Titles.txt','w',encoding='utf-8') as op:
+            for title in self.titles:
+                op.write(title + "\n")
 
 
 class QAPair(object):
