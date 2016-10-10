@@ -5,6 +5,7 @@ def main():
 
     reader = Reader()
     reader.process_raw_data("data/raw/",is_dir=True)
+
     reader.print_titles()
     reader.print_user_info()
 
@@ -14,7 +15,10 @@ class Reader(object):
 
         self.stopwords = None
         self.stoptags = None
-        self.titles = []
+        self.raw_data = None
+        self.corpus = None
+
+        self.titles = set()
         self.users_info = {}
         self.init_load_stopwords()
 
@@ -74,6 +78,14 @@ class Reader(object):
                 print(str(article))
                 continue
 
+            if title in self.titles:
+                continue
+
+            if "Responses" in article.keys():
+                article["Responses"] = self.clean_responses(article["Responses"])
+                if no_content:
+                    article.pop("Content")
+
             if drop_response:
                 if title.startswith("Re") or title.startswith("Fw"):
                     continue
@@ -84,12 +96,7 @@ class Reader(object):
 
             article["Tag"]   = tag
             article["Title"] = title
-            self.titles.append(title)
-
-            if "Responses" in article.keys():
-                article["Responses"] = self.clean_responses(article["Responses"])
-                if no_content:
-                    article.pop("Content")
+            self.titles.add(title)
 
             clean_article.append(article)
 
