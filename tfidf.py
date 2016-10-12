@@ -1,6 +1,7 @@
 
 import jieba
 
+from gensim import corpora, models, similarities
 from sklearn import feature_extraction
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -17,6 +18,7 @@ def main():
 
     analyst.load_corpus(corpus_type="SegmentedDocuments")
     analyst.tf_idf()
+    #analyst.tf_idf_with_gensim()
 
 class TfIdfAnalyst(object):
 
@@ -71,12 +73,25 @@ class TfIdfAnalyst(object):
         word = vectorizer.get_feature_names()
         weight = tfidf.toarray()
 
+        f = open("data/tf_idf.model",'w')
         for i in range(len(weight)) :
-            f = open("data/tf_idf.model",'w')
             for j in range(len(word)):
-                f.write(word[j]+"    "+str(weight[i][j])+"\n")
-            f.close()
+                f.write(word[j]+":"+str(weight[i][j])+"\n")
+        f.close()
 
+    def tf_idf_with_gensim(self):
+
+        assert self.doc_segmented, "請先完成 PTT Corpus 的斷詞"
+
+        corpus = [doc.split() for doc in self.corpus]
+        dictionary = corpora.Dictionary(corpus)
+        print(dictionary)
+
+        corpus = [dictionary.doc2bow(doc.split()) for doc in self.corpus]
+        tfidf = models.TfidfModel(corpus)
+        corpus_tfidf = tfidf[corpus]
+        for doc in corpus_tfidf:
+            print(doc)
 
 if __name__ == '__main__':
     main()
