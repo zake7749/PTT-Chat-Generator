@@ -18,8 +18,9 @@ def main():
     #data/processed_seged/seged_text.txt
     #analyst.load_corpus("PTTCorpus")
     #analyst.corpus_segmentation()
+    #analyst.corpus_segmentation(title_only=True)
 
-    analyst.load_corpus(corpus_type="SegmentedDocuments")
+    analyst.load_corpus(corpus_type="SegmentedDocuments", title_only=True)
     analyst.tf_idf(using="gensim")
 
 class TfIdfAnalyst(object):
@@ -40,12 +41,17 @@ class TfIdfAnalyst(object):
                 self.special_marks.add(m.strip('\n'))
 
 
-    def load_corpus(self, corpus_type, corpus_path="data/processed"):
+    def load_corpus(self, corpus_type, corpus_path="data/processed", title_only=False):
 
         """
         讀取語料庫，為 Corpus.py 產生出的 PTT 篩選後語料，
         以及將 PTTCorpus 內容斷詞完成的 SegmentedDocuments
         """
+
+        if title_only:
+            fix = "_title_only"
+        else:
+            fix = "_full"
 
         if corpus_type == "PTTCorpus":
             self.corpus = PTTCorpus()
@@ -53,7 +59,7 @@ class TfIdfAnalyst(object):
 
         elif corpus_type == "SegmentedDocuments":
             self.doc_segmented = True
-            with open('data/processed_seged/seged_text.txt','r',encoding='utf-8') as docs:
+            with open('data/processed_seged/seged_text' + fix + '.txt','r',encoding='utf-8') as docs:
                 self.corpus = [doc.strip('\n') for doc in docs]
                 print("# Documents: %d " % len(self.corpus))
 
@@ -64,10 +70,17 @@ class TfIdfAnalyst(object):
         """
         jieba.set_dictionary("jieba_dictionary/dict.txt.big")
 
-    def corpus_segmentation(self):
+    def corpus_segmentation(self, title_only=False):
 
-        with open('data/processed_seged/seged_text.txt','w',encoding='utf-8') as op:
-            for text in self.corpus.get_text():
+        if title_only:
+            generator = self.corpus.get_titles()
+            fix = "_title_only"
+        else:
+            generator = self.corpus.get_text()
+            fix = "_full"
+
+        with open("data/processed_seged/seged_text" + fix + ".txt",'w',encoding='utf-8') as op:
+            for text in generator:
                 seged = [word for word in jieba.cut(text,cut_all=False)
                          if word not in self.stopwords
                          and word not in self.special_marks]
@@ -108,7 +121,11 @@ class TfIdfAnalyst(object):
                     op.write(" ".join(doc)+'\n')
             """
             lda = models.LdaModel(corpus_tfidf, id2word=dictionary, num_topics=200)
-            lda.print_topics(20)
+            index = similarities.MatrixSimilarity(lda[corpus_tfidf])
+            index.save('/data/deerwester.index')
+            #lda.print_topics(20)
+
+
 
 if __name__ == '__main__':
     main()

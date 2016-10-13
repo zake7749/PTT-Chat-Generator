@@ -43,3 +43,7 @@ class PTTCorpus(Corpus):
             for r in article.responses:
                 resp += ' ' + r["Content"]
             yield title + resp
+
+    def get_titles(self):
+        for article in self.corpus:
+            yield article.title
