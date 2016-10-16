@@ -1,5 +1,7 @@
+import logging
+
 import jieba
-import Taiba
+from .. import Taiba
 
 class Matcher(object):
 
@@ -8,15 +10,34 @@ class Matcher(object):
     回傳語料集中最相似的一個句子。
     """
 
-    def __init__(segLib="jieba"):
+    def __init__(segLib="Taiba"):
+
+        logging.basicConfig(format='%(asctime)s : %(threadName)s : %(levelname)s : %(message)s', level=logging.INFO)
         self.titles = []
-        self.useTaiba = False
+        self.stopwords = set()
 
-    def jiebaCustomSetting(self):
-        pass
+        if segLib == "Taiba":
+            self.useTaiba = True
+        else:
+            self.useTaiba = False
 
-    def TaibaCustomSetting(self):
-        pass
+    def jiebaCustomSetting(self, dict_path, usr_dict_path):
+
+        jieba.set_dictionary(dict_path)
+        with open(usr_dict_path, 'r', encoding='utf-8') as dic:
+            for word in dic:
+                jieba.add_word(word.strip('\n'))
+
+    def TaibaCustomSetting(self, usr_dict):
+
+        with open(usr_dict, 'r', encoding='utf-8') as dic:
+            for word in dic:
+                Taiba.add_word(word.strip('\n'))
+
+    def loadStopWords(self, path):
+        with open(path, 'r', encoding='utf-8') as sw:
+            for word in sw:
+                self.stopwords.add(word.strip('\n'))
 
     def loadTitles(self, path):
 
@@ -35,6 +56,6 @@ class Matcher(object):
     def wordSegmentation(self, string):
 
         if useTaiba:
-            return Taiba.cut(string,cut_all=True)
+            return Taiba.lcut(string,CRF=True)
         else:
             return jieba.cut(string,cut_all=True)

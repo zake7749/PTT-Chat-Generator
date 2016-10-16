@@ -10,16 +10,18 @@ class FuzzyMatcher(Matcher):
 
         ratio  = -1
         target = ""
+        target_idx = -1
 
-        for title in self.titles:
+        for index,title in enumerate(self.titles):
 
             newRatio = fuzz.ratio(query, title)
             if newRatio >= ratio:
                 ratio  = newRatio
                 target = title
+                target_idx = index
 
         if sort:
-            #TODO 斷詞後以空白將句子重組
+            #TODO 斷詞後將句子重組，待確認有效性
             pass
 
-        return target
+        return index,target
