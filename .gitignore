@@ -1,1 +1,4 @@
 *.json
+Taiba/*
+Taiba
+__pycache__

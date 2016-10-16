@@ -1,7 +1,10 @@
-from . import Matcher
+from .matcher import Matcher
 from fuzzywuzzy import fuzz
 
 class FuzzyMatcher(Matcher):
+
+    def __init__(self, segLib="Taiba"):
+        super().__init__(segLib)
 
     def match(self, query, sort=False):
         """
@@ -24,4 +27,4 @@ class FuzzyMatcher(Matcher):
             #TODO 斷詞後將句子重組，待確認有效性
             pass
 
-        return index,target
+        return target,index

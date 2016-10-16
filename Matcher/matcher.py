@@ -1,7 +1,7 @@
 import logging
 
 import jieba
-from .. import Taiba
+import Taiba
 
 class Matcher(object):
 
@@ -10,7 +10,7 @@ class Matcher(object):
     回傳語料集中最相似的一個句子。
     """
 
-    def __init__(segLib="Taiba"):
+    def __init__(self, segLib="Taiba"):
 
         logging.basicConfig(format='%(asctime)s : %(threadName)s : %(levelname)s : %(message)s', level=logging.INFO)
         self.titles = []
