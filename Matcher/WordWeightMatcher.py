@@ -1,14 +1,34 @@
 from .matcher import Matcher
-from fuzzywuzzy import fuzz
 
-class FuzzyMatcher(Matcher):
-
-    """
-    基於萊文斯坦距離比對短語相似度
-    """
+class WordWeightMatcher(Matcher):
 
     def __init__(self, segLib="Taiba"):
         super().__init__(segLib)
+
+        self.segTitles = []
+        self.initialize()
+
+    def initialize(self):
+        self.TitlesSegmentation()
+        self.train_word_weight()
+
+    def TitlesSegmentation(self):
+        """
+        回傳 self.titles 斷詞後的 title 列表
+        """
+        self.segTitles = []
+        for title in self.titles:
+            self.segTitles.append(self.wordSegmentation(title))
+
+    def train_word_weight(self):
+        # 算法推導請見：http://www.52nlp.cn/forgetnlp4
+        
+
+
+
+
+    def _coprus_to_bow(self):
+
 
     def match(self, query, sort=False):
         """
