@@ -31,4 +31,4 @@ class FuzzyMatcher(Matcher):
             #TODO 斷詞後將句子重組，待確認有效性
             pass
 
-        return target,index
+        return target,target_idx
