@@ -55,7 +55,7 @@ class Matcher(object):
 
     def wordSegmentation(self, string):
 
-        if useTaiba:
+        if self.useTaiba:
             return Taiba.lcut(string,CRF=True)
         else:
             return jieba.cut(string,cut_all=True)

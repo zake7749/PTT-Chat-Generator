@@ -1,16 +1,31 @@
+import math
+import logging
+
+from collections import defaultdict
+
 from .matcher import Matcher
 
 class WordWeightMatcher(Matcher):
 
+    """
+    採用詞權重來比對短語相似度
+    """
+
     def __init__(self, segLib="Taiba"):
+
         super().__init__(segLib)
 
-        self.segTitles = []
-        self.initialize()
+        self.segTitles = [] # 斷好詞的標題
+        self.wordDictionary = defaultdict(int) # 保存每個詞的出現次數
+        self.totalWords = 0 # 詞總數
+        self.wordWeights = defaultdict(int) # 保存每個詞的權重
 
     def initialize(self):
+        logging.info("初始化模塊中...")
         self.TitlesSegmentation()
-        self.train_word_weight()
+        self.buildWordDictionary()
+        self.calculateWeight()
+        logging.info("初始化完成 :>")
 
     def TitlesSegmentation(self):
         """
@@ -19,36 +34,74 @@ class WordWeightMatcher(Matcher):
         self.segTitles = []
         for title in self.titles:
             self.segTitles.append(self.wordSegmentation(title))
+        logging.info("完成標題斷詞")
 
-    def train_word_weight(self):
-        # 算法推導請見：http://www.52nlp.cn/forgetnlp4
-        
+    def buildWordDictionary(self):
 
+        for title in self.segTitles:
+            for word in title:
+                self.wordDictionary[word] += 1
+                self.totalWords += 1
+        logging.info("詞記數完成")
 
+    def calculateWeight(self):
+        # 算法的數學推導請見：
+        # 非主流自然语言处理——遗忘算法系列（四）：改进TF-IDF权重公式
+        # http://www.52nlp.cn/forgetnlp4
+        # 此處儲存的 weight 為後項，即 -1 * log(N/T)
 
+        for word,count in self.wordDictionary.items():
+            self.wordWeights[word] = -1 * math.log10(count/self.totalWords)
+        logging.info("詞統計完成")
 
-    def _coprus_to_bow(self):
+    def getCooccurrence(self, q1, q2):
 
+        #TODO NEED OPTIMIZE!!!!
+        res = set()
+
+        for word in q1:
+            if word in q2:
+                res.add(word)
+        return res
+
+    def getWordWeight(self, word, n=1):
+        #TODO FIX N
+        return(n * self.wordWeights[word])
 
     def match(self, query, sort=False):
+
         """
         讀入使用者 query，若語料庫中存在相同的句子，便回傳該句子與標號
         """
 
-        ratio  = -1
+        max_similarity = -1
         target = ""
-        target_idx = -1
+        index = -1
+
+        segQuery = self.wordSegmentation(query)
 
         for index,title in enumerate(self.titles):
 
-            newRatio = fuzz.ratio(query, title)
-            if newRatio >= ratio:
-                ratio  = newRatio
+            allWordsWeight = 0.
+            coWordsWeight = 0.
+
+            coWords = self.getCooccurrence(title, segQuery)
+
+            for word in coWords:
+                coWordsWeight += self.getWordWeight(word)
+
+            for word in title:
+                if word not in coWords:
+                    allWordsWeight += self.getWordWeight(word)
+            for word in segQuery:
+                if word not in coWords:
+                    allWordsWeight += self.getWordWeight(word)
+
+            similarity = coWordsWeight/allWordsWeight
+
+            if similarity > max_similarity:
+                max_similarity = similarity
                 target = title
                 target_idx = index
 
-        if sort:
-            #TODO 斷詞後將句子重組，待確認有效性
-            pass
-
-        return target,index
+        return target,target_idx
