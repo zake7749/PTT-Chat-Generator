@@ -21,7 +21,8 @@ def main():
     #analyst.corpus_segmentation(title_only=True)
 
     analyst.load_corpus(corpus_type="SegmentedDocuments", title_only=True)
-    analyst.tf_idf(using="gensim")
+    #analyst.tf_idf(using="gensim")
+    analyst.doc2bow()
 
 class TfIdfAnalyst(object):
 
@@ -32,6 +33,7 @@ class TfIdfAnalyst(object):
         self.doc_segmented = False
         self.stopwords = set()
         self.special_marks = set()
+        self.index = None
 
         with open('data/stopwords/chinese_sw.txt','r',encoding='utf-8') as sw:
             for w in sw:
@@ -122,9 +124,26 @@ class TfIdfAnalyst(object):
             """
             lda = models.LdaModel(corpus_tfidf, id2word=dictionary, num_topics=200)
             index = similarities.MatrixSimilarity(lda[corpus_tfidf])
-            index.save('/data/deerwester.index')
+            #index.save('res.index')
             #lda.print_topics(20)
 
+            while True:
+                res = input("Search")
+                vec_bow = dictionary.doc2bow(jieba.cut(res,cut_all=False))
+                vec_lda = lda[vec_bow]
+                print(vec_lda)
+                sims = index[vec_lda]
+                sims = sorted(enumerate(sims), key=lambda item: -item[1])
+                print(sims)
+
+    def load_sim_index(self):
+            index = similarities.MatrixSimilarity.load('/tmp/deerwester.index')
+
+    def doc2bow(self):
+
+            while(True):
+                no = input("ID: ")
+                print(self.corpus[int(no)])
 
 
 if __name__ == '__main__':

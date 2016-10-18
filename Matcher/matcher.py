@@ -15,6 +15,7 @@ class Matcher(object):
         logging.basicConfig(format='%(asctime)s : %(threadName)s : %(levelname)s : %(message)s', level=logging.INFO)
         self.titles = []
         self.stopwords = set()
+        self.similarity = 1.
 
         if segLib == "Taiba":
             self.useTaiba = True
@@ -52,6 +53,9 @@ class Matcher(object):
         for index, title in enumerate(self.titles):
             if title == query:
                 return title,index
+
+    def getSimilarity(self):
+        return self.similarity
 
     def wordSegmentation(self, string):
 

@@ -27,6 +27,8 @@ class FuzzyMatcher(Matcher):
                 target = title
                 target_idx = index
 
+        self.similarity = ratio
+
         if sort:
             #TODO 斷詞後將句子重組，待確認有效性
             pass
