@@ -72,10 +72,19 @@ class Matcher(object):
         將 self.titles 斷詞後的結果輸出，並儲存於 self.segTitles
         """
 
+        logging.info("正準備將 titles 斷詞")
+
+        count = 0
+
         self.segTitles = []
         for title in self.titles:
             self.segTitles.append(self.wordSegmentation(title))
+
+            count += 1
+            if count % 1000 == 0:
+                logging.info("已斷詞完前 %d 篇文章" % count)
+
         with open('data/SegTitles.txt','w',encoding="utf-8") as seg_title:
             for title in self.segTitles:
-                seg_title.write(title + '\n')
+                seg_title.write(' '.join(title) + '\n')
         logging.info("完成標題斷詞，結果已暫存至 data/SegTitles.txt")
