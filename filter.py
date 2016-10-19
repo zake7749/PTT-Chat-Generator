@@ -79,7 +79,8 @@ class ArticleFilter(object):
 
     def load_processed_corpus(self, path="data/processed/"):
 
-        corpus_names = [name for name in os.listdir(path) if not name.startswith(".")]
+        corpus_names = [name for name in os.listdir(path)
+                        if not name.startswith(".") and os.path.isfile(name)]
 
         if len(corpus_names) != 0:
             for corpus_name in corpus_names:
