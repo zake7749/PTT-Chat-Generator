@@ -22,7 +22,7 @@ class PTTCorpus(Corpus):
         filename = None
 
         if is_dir:
-            filenames = [name for name in os.listdir(path)]
+            filenames = [name for name in os.listdir(path) if not name.startswith.(".")]
         else:
             filenames = [path]
 

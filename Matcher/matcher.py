@@ -13,7 +13,9 @@ class Matcher(object):
     def __init__(self, segLib="Taiba"):
 
         logging.basicConfig(format='%(asctime)s : %(threadName)s : %(levelname)s : %(message)s', level=logging.INFO)
-        self.titles = []
+        self.titles = [] # 欲進行匹配的所有標題
+        self.segTitles = [] # 斷好詞的標題
+
         self.stopwords = set()
         self.similarity = 1.
 
@@ -63,3 +65,17 @@ class Matcher(object):
             return Taiba.lcut(string,CRF=True)
         else:
             return jieba.cut(string,cut_all=True)
+
+    def TitlesSegmentation(self):
+
+        """
+        將 self.titles 斷詞後的結果輸出，並儲存於 self.segTitles
+        """
+
+        self.segTitles = []
+        for title in self.titles:
+            self.segTitles.append(self.wordSegmentation(title))
+        with open('data/SegTitles.txt','w',encoding="utf-8") as seg_title:
+            for title in self.segTitles:
+                seg_title.write(title + '\n')
+        logging.info("完成標題斷詞，結果已暫存至 data/SegTitles.txt")

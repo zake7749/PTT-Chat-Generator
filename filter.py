@@ -18,7 +18,7 @@ class ArticleFilter(object):
         self.stopwords = None
         self.stoptags = None
         self.raw_data = None
-        self.corpus = None
+        self.corpus = []
 
         self.titles = set()
         self.users_info = {}
@@ -39,13 +39,19 @@ class ArticleFilter(object):
         data = []
         total = []
         filename = None
+        count = 0
 
         if is_dir:
-            filenames = [name for name in os.listdir(path)]
+            filenames = [name for name in os.listdir(path) if not name.startswith(".")]
         else:
             filenames = [path]
 
         for filename in filenames:
+
+            count +=1
+            if count % 100 == 0:
+                print("已處理 %d 頁文章" % count)
+
             with open(os.path.join(path, filename),'r', encoding="utf-8") as data:
 
                 res = self.generate_corpus(json.load(data))
@@ -62,7 +68,7 @@ class ArticleFilter(object):
 
     def merge_coprus(self, path="data/processed/"):
 
-        corpus_names = [name for name in os.listdir(path)]
+        corpus_names = [name for name in os.listdir(path) if not name.startswith(".")]
         all_corpus = []
         for corpus_name in corpus_names:
             with open(os.path.join(path, corpus_name),'r', encoding='utf-8') as data:
@@ -73,7 +79,7 @@ class ArticleFilter(object):
 
     def load_processed_corpus(self, path="data/processed/"):
 
-        corpus_names = [name for name in os.listdir(path)]
+        corpus_names = [name for name in os.listdir(path) if not name.startswith(".")]
 
         if len(corpus_names) != 0:
             for corpus_name in corpus_names:
@@ -82,10 +88,16 @@ class ArticleFilter(object):
                     self.corpus += c
 
             for article in self.corpus:
-                self.titles.add(article["Title"])
+
+                a_title = article["Title"]
+                self.titles.add(a_title)
+
+                #輸出文章的 Responses
+                with open(os.path.join(path, a_title),'w', encoding="utf-8") as op:
+                    op.write(json.dumps(article["Responses"], indent=4, ensure_ascii=False))
 
 
-    def generate_corpus(self, articles, drop_response=True, negative_tag=None, no_content=True):
+    def generate_corpus(self, articles, drop_response=True, negative_tag=None, no_content=True, min_length=7):
 
         """
         依據需求挑選出符合語料庫需求的文章
@@ -95,6 +107,7 @@ class ArticleFilter(object):
             - drop_response: 是否濾除回應文章
             - negative_tag: 要濾除的標籤集
             - no_content: 是否需要保存文章內容
+            - min_length: 只保存長度超過 min_length 之標題
         """
 
         if negative_tag is None:
@@ -108,11 +121,11 @@ class ArticleFilter(object):
                 #TODO 有些空頁面會造成錯誤 (atricle = {})
                 title = article["Title"]
             except:
-                print("NO DATA" + str(article))
+                print("[NO DATA]: " + str(article))
                 continue
 
-            if title in self.titles:
-                #捨去標題重複的文章
+            if title in self.titles or len(title) < min_length:
+                #捨去已存在語料庫的標題或過短的標題
                 continue
 
             if "Responses" in article.keys():
@@ -121,7 +134,7 @@ class ArticleFilter(object):
                     article.pop("Content")
 
             if drop_response:
-                #捨去回應類文章與快訊文章
+                #捨去回應類文章與快訊文章, i.e Re: and Fw:
                 if title.startswith("Re") or title.startswith("Fw"):
                     continue
 

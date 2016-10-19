@@ -15,7 +15,6 @@ class WordWeightMatcher(Matcher):
 
         super().__init__(segLib)
 
-        self.segTitles = [] # 斷好詞的標題
         self.wordDictionary = defaultdict(int) # 保存每個詞的出現次數
         self.totalWords = 0 # 詞總數
         self.wordWeights = defaultdict(int) # 保存每個詞的權重
@@ -26,15 +25,6 @@ class WordWeightMatcher(Matcher):
         self.buildWordDictionary()
         self.calculateWeight()
         logging.info("初始化完成 :>")
-
-    def TitlesSegmentation(self):
-        """
-        回傳 self.titles 斷詞後的 title 列表
-        """
-        self.segTitles = []
-        for title in self.titles:
-            self.segTitles.append(self.wordSegmentation(title))
-        logging.info("完成標題斷詞")
 
     def buildWordDictionary(self):
 

@@ -1,5 +1,6 @@
 from .matcher import Matcher
 from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
 class FuzzyMatcher(Matcher):
 
@@ -15,9 +16,11 @@ class FuzzyMatcher(Matcher):
         讀入使用者 query，若語料庫中存在相同的句子，便回傳該句子與標號
         """
 
-        ratio  = -1
+        ratio  = 1
         target = ""
         target_idx = -1
+
+        #target,ratio = process.extractOne(query, self.titles)
 
         for index,title in enumerate(self.titles):
 
@@ -30,7 +33,7 @@ class FuzzyMatcher(Matcher):
         self.similarity = ratio
 
         if sort:
-            #TODO 斷詞後將句子重組，待確認有效性
+            #TODO 斷詞後將句子重組，待確認有效性 
             pass
 
         return target,target_idx
