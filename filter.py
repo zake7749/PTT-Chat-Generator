@@ -58,7 +58,7 @@ class ArticleFilter(object):
 
             count +=1
             if count % 100 == 0:
-                print("已處理 %d 頁文章, 其中有效文章數為 %d" % (count, self.article_count))
+                logging.info("已處理 %d 頁文章, 其中有效文章數為 %d" % (count, self.article_count))
 
             with open(os.path.join(path, filename),'r', encoding="utf-8") as data:
 
@@ -69,7 +69,7 @@ class ArticleFilter(object):
                 else:
                     with open("data/processed/"+filename,'w', encoding='utf-8') as op:
                         op.write(json.dumps(res, indent=4, ensure_ascii=False))
-                        print("已處理 " + filename)
+                        logging.info("已處理 " + filename)
         if to_one_file:
             with open("data/processed/" + one_file_name,'w', encoding='utf-8') as op:
                 op.write(json.dumps(total, indent=4, ensure_ascii=False))
