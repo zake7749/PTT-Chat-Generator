@@ -33,7 +33,7 @@ class FuzzyMatcher(Matcher):
         self.similarity = ratio
 
         if sort:
-            #TODO 斷詞後將句子重組，待確認有效性 
+            #TODO 斷詞後將句子重組，待確認有效性
             pass
 
         return target,target_idx

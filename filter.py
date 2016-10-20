@@ -1,11 +1,12 @@
 import json
+import logging
 import os
 
 def main():
 
     Filter = ArticleFilter()
     #reader.process_raw_data("data/raw/",is_dir=True)
-    Filter.load_processed_corpus()
+    #Filter.load_processed_corpus()
     Filter.process_raw_data("data/raw/",is_dir=True,to_one_file=True)
 
     Filter.print_titles()
@@ -19,10 +20,17 @@ class ArticleFilter(object):
         self.stoptags = None
         self.raw_data = None
         self.corpus = []
+        self.response_cache = []
+
+        self.article_count = 0
+        self.reply_index = -1 # 透過標題的 index/1000 反查 reply 位置
 
         self.titles = set()
         self.users_info = {}
+
         self.init_load_stopwords()
+
+        logging.basicConfig(format='%(asctime)s : %(threadName)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     def init_load_stopwords(self):
 
@@ -50,7 +58,7 @@ class ArticleFilter(object):
 
             count +=1
             if count % 100 == 0:
-                print("已處理 %d 頁文章" % count)
+                print("已處理 %d 頁文章, 其中有效文章數為 %d" % (count, self.article_count))
 
             with open(os.path.join(path, filename),'r', encoding="utf-8") as data:
 
@@ -121,24 +129,24 @@ class ArticleFilter(object):
             try:
                 #TODO 有些空頁面會造成錯誤 (atricle = {})
                 title = article["Title"]
+                article["Responses"] = self.clean_responses(article["Responses"])
             except:
-                print("[NO DATA]: " + str(article))
+                #print("[NO DATA]: " + str(article))
                 continue
 
+            #######################文章客製化選項######################
             if title in self.titles or len(title) < min_length:
                 #捨去已存在語料庫的標題或過短的標題
                 continue
-
-            if "Responses" in article.keys():
-                article["Responses"] = self.clean_responses(article["Responses"])
-                if no_content:
-                    article.pop("Content")
 
             if drop_response:
                 #捨去回應類文章與快訊文章, i.e Re: and Fw:
                 if title.startswith("Re") or title.startswith("Fw"):
                     continue
+            if no_content:
+                article.pop("Content")
 
+            #######################標籤抽取##########################
             tag, title = self.get_tag(title)
             if tag in negative_tag:
                 continue
@@ -146,6 +154,15 @@ class ArticleFilter(object):
             article["Tag"]   = tag
             article["Title"] = title
             self.titles.add(title)
+
+            ######################回應抽取與輸出######################
+            self.response_cache.append(article["Responses"])
+            self.article_count += 1
+            if self.article_count % 1000 == 0: # 每個 json 檔儲存 1000 篇文章的回應
+                self.reply_index += 1
+                with open("data/processed/reply/"+str(self.reply_index)+".json",'w',encoding="utf-8") as reply:
+                    reply.write(json.dumps(self.response_cache, indent=4, ensure_ascii=False))
+                self.response_cache = []
 
             clean_article.append(article)
 
