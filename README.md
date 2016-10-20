@@ -23,3 +23,18 @@
 * fuzzywuzzy : 模糊字串比對
   * python-Levenshtein : 用於優化 fuzzywuzzy 計算速度的套件包
 * sentence2vec(optional)
+
+## Data
+* raw: 儲存PTT-Crawler爬取的原始資料
+* processed: 儲存已經篩選過的文章（如濾除特定標籤、使用者）
+  * reply: 儲存文章回應，每 1000 筆為一個檔案
+* processed_seged: 儲存文章或回應的斷詞結果
+* stopwords: 儲存常用中文停用詞、PTT 停用詞、負面標籤
+* User_info: 基於 raw 的使用者推噓文紀錄
+* Titles.txt: 存放篩選後文章的標題
+
+## 實驗簡述
+
+1. 使用 PTT-Crawler 爬取文章後放置於 "data/raw/"
+2. 使用 filter.py 從原始資料裡挑選出需要的資料
+3. 使用 match.py 測試匹配結果
