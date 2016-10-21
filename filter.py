@@ -5,11 +5,11 @@ import os
 def main():
 
     Filter = ArticleFilter()
-    #reader.process_raw_data("data/raw/",is_dir=True)
-    #Filter.load_processed_corpus()
-    Filter.process_raw_data("data/raw/",is_dir=True,to_one_file=True)
+    Filter.load_processed_corpus()
+    #Filter.process_raw_data("data/raw/",is_dir=True,to_one_file=True)
 
     Filter.print_titles()
+    Filter.print_response()
     # Filter.print_user_info() TODO?
 
 class ArticleFilter(object):
@@ -20,10 +20,10 @@ class ArticleFilter(object):
         self.stoptags = None
         self.raw_data = None
         self.corpus = []
-        self.response_cache = []
+        self.order_response = []
+        self.order_titles = []
 
         self.article_count = 0
-        self.reply_index = -1 # 透過標題的 index/1000 反查 reply 位置
 
         self.titles = set()
         self.users_info = {}
@@ -88,22 +88,21 @@ class ArticleFilter(object):
     def load_processed_corpus(self, path="data/processed/"):
 
         corpus_names = [name for name in os.listdir(path)
-                        if not name.startswith(".") and os.path.isfile(name)]
+                        if not name.startswith(".") and os.path.isfile(os.path.join("data/processed/",name))]
 
-        if len(corpus_names) != 0:
-            for corpus_name in corpus_names:
-                with open(os.path.join(path, corpus_name),'r', encoding='utf-8') as data:
-                    c = json.load(data)
-                    self.corpus += c
+        logging.info("正在載入現有語料")
+        for corpus_name in corpus_names:
+            with open(os.path.join(path, corpus_name),'r', encoding='utf-8') as data:
+                c = json.load(data)
+                self.corpus += c
+                logging.info("已讀入 %d 篇文章" % len(self.corpus))
 
-            for article in self.corpus:
-
-                a_title = article["Title"]
-                self.titles.add(a_title)
-
-                #輸出文章的 Responses
-                with open(os.path.join(path, a_title),'w', encoding="utf-8") as op:
-                    op.write(json.dumps(article["Responses"], indent=4, ensure_ascii=False))
+        logging.info("正在抽取文章與回應")
+        for article in self.corpus:
+            self.titles.add(article["Title"])
+            self.order_titles.append(article["Title"])
+            self.order_response.append(article["Responses"])
+        logging.info("文章與回應抽取完成")
 
 
     def generate_corpus(self, articles, drop_response=True, negative_tag=None, no_content=True, min_length=7):
@@ -117,6 +116,8 @@ class ArticleFilter(object):
             - negative_tag: 要濾除的標籤集
             - no_content: 是否需要保存文章內容
             - min_length: 只保存長度超過 min_length 之標題
+        Return:
+            - coprus: 一個儲存符合需求的文章列表
         """
 
         if negative_tag is None:
@@ -125,16 +126,13 @@ class ArticleFilter(object):
         clean_article = []
 
         for article in articles:
-
+            #####################濾除非結構化文章#####################
             try:
-                #TODO 有些空頁面會造成錯誤 (atricle = {})
                 title = article["Title"]
                 article["Responses"] = self.clean_responses(article["Responses"])
             except:
-                #print("[NO DATA]: " + str(article))
                 continue
-
-            #######################文章客製化選項######################
+            ######################文章客製化選項######################
             if title in self.titles or len(title) < min_length:
                 #捨去已存在語料庫的標題或過短的標題
                 continue
@@ -145,25 +143,18 @@ class ArticleFilter(object):
                     continue
             if no_content:
                 article.pop("Content")
-
             #######################標籤抽取##########################
-            tag, title = self.get_tag(title)
+            tag, title = self.get_tag(title) #將標題與標籤分開
             if tag in negative_tag:
                 continue
 
             article["Tag"]   = tag
             article["Title"] = title
             self.titles.add(title)
+            self.order_titles.append(title)
+            self.order_response.append(article["Responses"])
 
-            ######################回應抽取與輸出######################
-            self.response_cache.append(article["Responses"])
             self.article_count += 1
-            if self.article_count % 1000 == 0: # 每個 json 檔儲存 1000 篇文章的回應
-                self.reply_index += 1
-                with open("data/processed/reply/"+str(self.reply_index)+".json",'w',encoding="utf-8") as reply:
-                    reply.write(json.dumps(self.response_cache, indent=4, ensure_ascii=False))
-                self.response_cache = []
-
             clean_article.append(article)
 
         return clean_article
@@ -171,13 +162,15 @@ class ArticleFilter(object):
     def clean_responses(self, responses, negative_user=set(), min_length=3, stopwords=None):
 
         """
-        濾除不需要的回應
+        依照負面使用者案例、回應長度與是否包含停用詞來濾除負面的回應
 
         Args:
-            responses: 回應的 dictionary
-            negative_user: 要濾除該 User set 的回應
-            min_length: 濾除低於 min_length 的回應
-            stopwords: 濾除有敏感字詞的回應
+            - responses: 回應的 dictionary
+            - negative_user: 要濾除該 User set 的回應
+            - min_length: 濾除低於 min_length 的回應
+            - stopwords: 濾除有敏感字詞的回應
+        Return:
+            - Responses: 已清除負面回應的字典
         """
 
         if stopwords is None:
@@ -187,13 +180,14 @@ class ArticleFilter(object):
 
         for response in responses:
 
-            self._update_users_history(response) # 更新使用者推噓文紀錄
+            #self._update_users_history(response) # 更新使用者推噓文紀錄
 
             # 濾除過短與特定使用者的回應
             if response["User"] in negative_user or len(response["Content"]) < min_length:
                 continue
+            # 濾除包含停用詞的回應
             for w in stopwords:
-                if w in response["Content"]: # 濾除包含停用詞的回應
+                if w in response["Content"]:
                     continue
 
             clean_responses.append(response)
@@ -241,26 +235,32 @@ class ArticleFilter(object):
         return tag[1:],title
 
     def print_titles(self):
+
+        logging.info("正在輸出文章標題")
         with open('data/Titles.txt','w',encoding='utf-8') as op:
-            for title in self.titles:
+            for title in self.order_titles:
                 op.write(title + "\n")
+        logging.info("文章標題輸出完成")
+
 
     def print_user_info(self):
         with open('data/User_info.txt','w',encoding='utf-8') as op:
             op.write(json.dumps(self.users_info, indent=4, ensure_ascii=False))
 
+    def print_response(self):
+        logging.info("正在輸出回應內容")
+        resSplit = []
+        sc = 0
 
-class User(object):
-    pass
-
-class QAPair(object):
-
-    def __init__():
-
-        self.tag      = ""
-        self.title    = ""
-        self.author   = ""
-        self.response = None
+        for response in self.order_response:
+            sc += 1
+            resSplit.append(response)
+            if len(resSplit) % 1000 == 0:
+                logging.info("已輸出 %d 篇回應" % sc)
+                with open('data/processed/reply/'+str(int(len(resSplit)/1000) - 1)+'.json','w',encoding='utf-8') as tr:
+                    tr.write(json.dumps(resSplit, indent=4, ensure_ascii=False))
+                    resSplit = []
+        logging.info("回應輸出完成")
 
 if __name__ == '__main__':
     main()
