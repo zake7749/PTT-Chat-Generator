@@ -88,6 +88,9 @@ class Matcher(object):
 
             self.segTitles = []
             for title in self.titles:
+
+                #clean = [word for word in self.wordSegmentation(title)
+                #        if word not in self.stopwords]
                 self.segTitles.append(self.wordSegmentation(title))
 
                 count += 1
@@ -101,7 +104,7 @@ class Matcher(object):
         else:
             logging.info("偵測到先前的標題斷詞結果，讀取中...")
             with open('data/SegTitles.txt','r',encoding="utf-8") as seg_title:
-                for line in self.segTitles:
+                for line in seg_title:
                     line = line.strip('\n')
                     seg = line.split()
                     self.segTitles.append(seg)

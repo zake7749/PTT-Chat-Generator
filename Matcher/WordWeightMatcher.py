@@ -1,6 +1,8 @@
 import math
 import logging
 
+import gensim
+
 from collections import defaultdict
 
 from .matcher import Matcher
@@ -23,6 +25,7 @@ class WordWeightMatcher(Matcher):
         logging.info("初始化模塊中...")
         self.TitlesSegmentation()
         self.buildWordDictionary()
+        #self.loadStopWords("data/stopwords/chinese_sw.txt")
         self.calculateWeight()
         logging.info("初始化完成 :>")
 
@@ -34,6 +37,9 @@ class WordWeightMatcher(Matcher):
                 self.totalWords += 1
         logging.info("詞記數完成")
 
+    def buildWordBag(self):
+        dictionary = gensim.corpora.Dictionary(self.titles)
+
     def calculateWeight(self):
         # 算法的數學推導請見：
         # 非主流自然语言处理——遗忘算法系列（四）：改进TF-IDF权重公式
@@ -44,14 +50,16 @@ class WordWeightMatcher(Matcher):
             self.wordWeights[word] = -1 * math.log10(count/self.totalWords)
         logging.info("詞統計完成")
 
+
+
+
     def getCooccurrence(self, q1, q2):
 
         #TODO NEED OPTIMIZE!!!!
-        res = set()
-
+        res = []
         for word in q1:
             if word in q2:
-                res.add(word)
+                res.append(word)
         return res
 
     def getWordWeight(self, word, n=1):
@@ -68,7 +76,8 @@ class WordWeightMatcher(Matcher):
         target = ""
         index = -1
 
-        segQuery = self.wordSegmentation(query)
+        segQuery = [word for word in self.wordSegmentation(query)
+                    if word not in self.stopwords]
 
         for index,title in enumerate(self.titles):
 

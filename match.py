@@ -8,16 +8,24 @@ from Matcher.matcher import Matcher
 
 def main():
     matcherTesting("Fuzzy", threshold=0.5)
-    #fuzzyMatch(threshold=50)
-    #woreWeightMatch(threshold=0.5)
 
+def getMatcher(matcherType,sort=False):
 
-def getMatcher(matcherType):
+    """
+    回傳初始完畢的 Matcher
+
+    Args:
+        - matcherType:要使用哪種字串匹配方式
+            - Fuzzy
+            - WordWeight
+        - sort:
+            - a boolean value for fuzzy sorting match.
+    """
 
     if matcherType == "WordWeight":
         return woreWeightMatch()
     elif matcherType == "Fuzzy":
-        return fuzzyMatch()
+        return fuzzyMatch(sort)
     elif matcherType == "Vectorize":
         pass #TODO
     elif matcherType == "DeepLearning":
@@ -28,7 +36,7 @@ def getMatcher(matcherType):
 
 def matcherTesting(matcherType, threshold=0.5):
 
-    matcher = getMatcher(matcherType)
+    matcher = getMatcher(matcherType,sort=True)
     while True:
         query = input("隨便說些什麼吧: ")
         title,index = matcher.match(query,threshold)
@@ -50,9 +58,12 @@ def woreWeightMatch():
     weightMatcher.initialize()
     return weightMatcher
 
-def fuzzyMatch():
+def fuzzyMatch(sort=False):
     fuzzyMatcher = FuzzyMatcher(segLib="Taiba")
     fuzzyMatcher.loadTitles(path="data/Titles.txt")
+    if sort:
+        fuzzyMatcher.TitlesSegmentation()
+        fuzzyMatch.joinTitles()
     return fuzzyMatcher
 
     #load a custom user dictionary.
