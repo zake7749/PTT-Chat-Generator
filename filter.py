@@ -5,8 +5,8 @@ import os
 def main():
 
     Filter = ArticleFilter()
-    Filter.load_processed_corpus()
-    #Filter.process_raw_data("data/raw/",is_dir=True,to_one_file=True)
+    #Filter.load_processed_corpus()
+    Filter.process_raw_data("data/raw/",is_dir=True,to_one_file=True)
 
     Filter.print_titles()
     Filter.print_response()
@@ -39,6 +39,7 @@ class ArticleFilter(object):
         """
         with open('data/stopwords/ptt_words.txt','r', encoding='utf-8') as sw:
             self.stopwords = [word.strip('\n') for word in sw]
+            print(self.stopwords)
         with open('data/stopwords/gossiping.tag','r', encoding='utf-8') as sw:
             self.stoptags = [word.strip('\n') for word in sw]
 
@@ -129,7 +130,8 @@ class ArticleFilter(object):
             #####################濾除非結構化文章#####################
             try:
                 title = article["Title"]
-                article["Responses"] = self.clean_responses(article["Responses"])
+                clean_responses = self.clean_responses(article["Responses"])
+                article["Responses"] = clean_responses
             except:
                 continue
             ######################文章客製化選項######################
@@ -144,22 +146,22 @@ class ArticleFilter(object):
             if no_content:
                 article.pop("Content")
             #######################標籤抽取##########################
-            tag, title = self.get_tag(title) #將標題與標籤分開
+            tag, clean_title = self.get_tag(title) #將標題與標籤分開
             if tag in negative_tag:
                 continue
 
             article["Tag"]   = tag
-            article["Title"] = title
-            self.titles.add(title)
-            self.order_titles.append(title)
-            self.order_response.append(article["Responses"])
+            article["Title"] = clean_title
+            self.titles.add(clean_title)
+            self.order_titles.append(clean_title)
+            self.order_response.append(clean_responses)
 
             self.article_count += 1
             clean_article.append(article)
 
         return clean_article
 
-    def clean_responses(self, responses, negative_user=set(), min_length=3, stopwords=None):
+    def clean_responses(self, responses, negative_user=set(), min_length=6, stopwords=None):
 
         """
         依照負面使用者案例、回應長度與是否包含停用詞來濾除負面的回應
@@ -181,16 +183,17 @@ class ArticleFilter(object):
         for response in responses:
 
             #self._update_users_history(response) # 更新使用者推噓文紀錄
+            drop = False
 
             # 濾除過短與特定使用者的回應
             if response["User"] in negative_user or len(response["Content"]) < min_length:
-                continue
+                drop = True
             # 濾除包含停用詞的回應
             for w in stopwords:
                 if w in response["Content"]:
-                    continue
-
-            clean_responses.append(response)
+                    drop = True
+            if not drop:
+                clean_responses.append(response)
 
         return clean_responses
 
