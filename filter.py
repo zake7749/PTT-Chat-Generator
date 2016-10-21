@@ -255,11 +255,11 @@ class ArticleFilter(object):
         for response in self.order_response:
             sc += 1
             resSplit.append(response)
-            if len(resSplit) % 1000 == 0:
-                logging.info("已輸出 %d 篇回應" % sc)
-                with open('data/processed/reply/'+str(int(len(resSplit)/1000) - 1)+'.json','w',encoding='utf-8') as tr:
+            if sc % 1000 == 0:
+                with open('data/processed/reply/'+str(int(sc/1000) - 1)+'.json','w',encoding='utf-8') as tr:
                     tr.write(json.dumps(resSplit, indent=4, ensure_ascii=False))
                     resSplit = []
+                logging.info("已輸出 %d 篇回應" % sc)
         logging.info("回應輸出完成")
 
 if __name__ == '__main__':
