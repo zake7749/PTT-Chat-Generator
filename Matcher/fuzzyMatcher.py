@@ -12,9 +12,8 @@ class FuzzyMatcher(Matcher):
         super().__init__(segLib)
 
     def joinTitles(self):
-        for title in self.segTitles:
-            title = "".join(title)
-
+        self.segTitles = ["".join(title) for title in self.segTitles]
+        
     def match(self, query, sort=False):
         """
         讀入使用者 query，若語料庫中存在類似的句子，便回傳該句子與標號
@@ -23,7 +22,6 @@ class FuzzyMatcher(Matcher):
             - query: 使用者欲查詢的語句
             - sort: 是否不考慮詞序
         """
-
         ratio  = 1
         target = ""
         target_idx = -1

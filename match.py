@@ -7,7 +7,7 @@ from Matcher.wordWeightMatcher import WordWeightMatcher
 from Matcher.matcher import Matcher
 
 def main():
-    matcherTesting("Fuzzy", threshold=0.5)
+    matcherTesting("Fuzzy",sort=True)
 
 def getMatcher(matcherType,sort=False):
 
@@ -34,12 +34,12 @@ def getMatcher(matcherType,sort=False):
         print("[Error]: Invailded type.")
         exit()
 
-def matcherTesting(matcherType, threshold=0.5):
+def matcherTesting(matcherType, sort=False):
 
-    matcher = getMatcher(matcherType,sort=True)
+    matcher = getMatcher(matcherType,sort)
     while True:
         query = input("隨便說些什麼吧: ")
-        title,index = matcher.match(query,threshold)
+        title,index = matcher.match(query,sort)
         sim = matcher.getSimilarity()
         print("最為相似的標題是 %s ，相似度為 %d " % (title,sim))
 
@@ -63,7 +63,7 @@ def fuzzyMatch(sort=False):
     fuzzyMatcher.loadTitles(path="data/Titles.txt")
     if sort:
         fuzzyMatcher.TitlesSegmentation()
-        fuzzyMatch.joinTitles()
+        fuzzyMatcher.joinTitles()
     return fuzzyMatcher
 
     #load a custom user dictionary.
