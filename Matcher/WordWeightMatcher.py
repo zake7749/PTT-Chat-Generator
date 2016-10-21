@@ -94,6 +94,6 @@ class WordWeightMatcher(Matcher):
                 target = title
                 target_idx = index
 
-        self.similarity = max_similarity
+        self.similarity = max_similarity * 100 #統一為百分制
 
         return target,target_idx

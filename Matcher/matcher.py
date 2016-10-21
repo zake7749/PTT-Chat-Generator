@@ -1,4 +1,5 @@
 import logging
+import os
 
 import jieba
 import Taiba
@@ -50,6 +51,13 @@ class Matcher(object):
     def match(self, query):
         """
         讀入使用者 query，若語料庫中存在相同的句子，便回傳該句子與標號
+
+        Args:
+            - query: 使用者的輸入
+
+        Return: (title,index)
+            - title: 最為相似的標題
+            - 該標題的索引編號
         """
         result = None
         for index, title in enumerate(self.titles):
@@ -76,15 +84,25 @@ class Matcher(object):
 
         count = 0
 
-        self.segTitles = []
-        for title in self.titles:
-            self.segTitles.append(self.wordSegmentation(title))
+        if not os.path.exists('data/SegTitles.txt'):
 
-            count += 1
-            if count % 1000 == 0:
-                logging.info("已斷詞完前 %d 篇文章" % count)
+            self.segTitles = []
+            for title in self.titles:
+                self.segTitles.append(self.wordSegmentation(title))
 
-        with open('data/SegTitles.txt','w',encoding="utf-8") as seg_title:
-            for title in self.segTitles:
-                seg_title.write(' '.join(title) + '\n')
-        logging.info("完成標題斷詞，結果已暫存至 data/SegTitles.txt")
+                count += 1
+                if count % 1000 == 0:
+                    logging.info("已斷詞完前 %d 篇文章" % count)
+
+            with open('data/SegTitles.txt','w',encoding="utf-8") as seg_title:
+                for title in self.segTitles:
+                    seg_title.write(' '.join(title) + '\n')
+            logging.info("完成標題斷詞，結果已暫存至 data/SegTitles.txt")
+        else:
+            logging.info("偵測到先前的標題斷詞結果，讀取中...")
+            with open('data/SegTitles.txt','r',encoding="utf-8") as seg_title:
+                for line in self.segTitles:
+                    line = line.strip('\n')
+                    seg = line.split()
+                    self.segTitles.append(seg)
+                logging.info("%d 個標題已完成載入" % len(self.segTitles))
