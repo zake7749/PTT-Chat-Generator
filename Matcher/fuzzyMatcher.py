@@ -13,7 +13,7 @@ class FuzzyMatcher(Matcher):
 
     def joinTitles(self):
         self.segTitles = ["".join(title) for title in self.segTitles]
-        
+
     def match(self, query, sort=False):
         """
         讀入使用者 query，若語料庫中存在類似的句子，便回傳該句子與標號
@@ -25,7 +25,6 @@ class FuzzyMatcher(Matcher):
         ratio  = 1
         target = ""
         target_idx = -1
-
         if sort:
             query = self.wordSegmentation(query)
             query = "".join(query)
@@ -36,6 +35,7 @@ class FuzzyMatcher(Matcher):
         for index,title in enumerate(title_list):
 
             newRatio = fuzz.ratio(query, title)
+
             if newRatio >= ratio:
                 ratio  = newRatio
                 target = title

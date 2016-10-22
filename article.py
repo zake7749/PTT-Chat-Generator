@@ -36,6 +36,7 @@ class Article(object):
         for i in range(1,len(responses)-1):
 
             if responses[i]["User"] == cur_resp["User"]:
+                cur_resp["Content"].rsrtip('\n') # 將上一篇推文的換行去除
                 cur_resp["Content"] += responses[i]["Content"]
             else:
                 self.responses.append(cur_resp)

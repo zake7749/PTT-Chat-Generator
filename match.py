@@ -7,7 +7,7 @@ from Matcher.wordWeightMatcher import WordWeightMatcher
 from Matcher.matcher import Matcher
 
 def main():
-    matcherTesting("Fuzzy",sort=True)
+    matcherTesting("Fuzzy")
 
 def getMatcher(matcherType,sort=False):
 

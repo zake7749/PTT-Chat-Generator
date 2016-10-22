@@ -39,7 +39,7 @@ class ArticleFilter(object):
         """
         with open('data/stopwords/ptt_words.txt','r', encoding='utf-8') as sw:
             self.stopwords = [word.strip('\n') for word in sw]
-            print(self.stopwords)
+            #print(self.stopwords)
         with open('data/stopwords/gossiping.tag','r', encoding='utf-8') as sw:
             self.stoptags = [word.strip('\n') for word in sw]
 
@@ -62,7 +62,6 @@ class ArticleFilter(object):
                 logging.info("已處理 %d 頁文章, 其中有效文章數為 %d" % (count, self.article_count))
 
             with open(os.path.join(path, filename),'r', encoding="utf-8") as data:
-
                 res = self.generate_corpus(json.load(data))
 
                 if to_one_file:
@@ -106,7 +105,7 @@ class ArticleFilter(object):
         logging.info("文章與回應抽取完成")
 
 
-    def generate_corpus(self, articles, drop_response=True, negative_tag=None, no_content=True, min_length=7):
+    def generate_corpus(self, articles, drop_response=True, negative_tag=None, no_content=True, min_length=6):
 
         """
         依據需求挑選出符合語料庫需求的文章
@@ -131,8 +130,11 @@ class ArticleFilter(object):
             try:
                 title = article["Title"]
                 clean_responses = self.clean_responses(article["Responses"])
+                if len(clean_responses) == 0:
+                    continue # 不需要沒有回應的文章
                 article["Responses"] = clean_responses
-            except:
+            except Exception as e:
+                #print("Wrong Format: %s" % str(e))
                 continue
             ######################文章客製化選項######################
             if title in self.titles or len(title) < min_length:
@@ -193,6 +195,7 @@ class ArticleFilter(object):
                 if w in response["Content"]:
                     drop = True
             if not drop:
+                response["Content"] = response["Content"].strip()
                 clean_responses.append(response)
 
         return clean_responses
