@@ -74,6 +74,9 @@ class ArticleFilter(object):
             with open("data/processed/" + one_file_name,'w', encoding='utf-8') as op:
                 op.write(json.dumps(total, indent=4, ensure_ascii=False))
 
+    def roclean_corpus(self):
+        pass
+
     def merge_coprus(self, path="data/processed/"):
 
         corpus_names = [name for name in os.listdir(path) if not name.startswith(".")]
