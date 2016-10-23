@@ -1,7 +1,22 @@
-# PTT Text Mining
+# PTT GossipBot
 
 本專案的目的在實作一個推文產生器，由使用者輸入一個隨機標題，即能回覆一個恰當的推文，目前仍在進行中 d(`･∀･)b
 
+## 目前成果
+```
+Bot: 你好啊，旅行者，讓我們來聊聊八卦吧 o_o
+為什麼李嚴要炸三隻蝦
+Bot: 因為他的蝦比較小隻吧
+overwatch是不是過譽了
+Bot: overhyped overrated overmarketed 自己選
+中午要吃些什麼好
+Bot: 咖哩飯 咖喱飯 還有咖哩飯
+夏林清守得住街亭嗎
+Bot: 揮淚被停職 你說呢
+要怎麼跟正妹搭訕
+Bot: 我想教你但是不能po文 哈哈
+
+```
 ## 類別說明
 
 * [PTT-Crawler](https://github.com/zake7749/PTT-Crawler): 用於爬取 PTT 頁面的原始文章
@@ -13,6 +28,9 @@
   * `FuzzyMatcher`: 基於 Levenshtein Distance 比對短語相似度
   * `VectorMatcher`: 基於 sentence2vec 比對短語相似度 TODO!
   * `KeywordMatcher`: 基於 tf/idf 比對短語相似度 TODO!
+* `ResponsesEvaluate`: 從推文中挑選出最佳推文
+  * `Evaluator`: 基於字頻來選取最佳回應
+  * `ClusteringEvaluator`: 基於聚類來選取最佳回應
 
 ## 套件需求
 
@@ -22,12 +40,12 @@
 * gensim : 使用詞袋、tfidf、word2vec
 * fuzzywuzzy : 模糊字串比對
   * python-Levenshtein : 用於優化 fuzzywuzzy 計算速度的套件包
-* sentence2vec(optional)
+* sentence2vec(非必要)
 
 ## Data
 * raw: 儲存PTT-Crawler爬取的原始資料
 * processed: 儲存已經篩選過的文章（如濾除特定標籤、使用者）
-  * reply: 儲存文章回應，每 1000 筆為一個檔案
+  * reply: 儲存文章回應，每 1000 筆為一個檔案（目前未上傳至 Githubs）
 * processed_seged: 儲存文章或回應的斷詞結果
 * stopwords: 儲存常用中文停用詞、PTT 停用詞、負面標籤
 * User_info: 基於 raw 的使用者推噓文紀錄

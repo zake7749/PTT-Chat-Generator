@@ -1,3 +1,6 @@
+from gensim import models,corpora
+from sklearn import svm
+
 from . import Matcher
 
 class VectorMatcher(Matcher):

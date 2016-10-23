@@ -2,6 +2,7 @@ import json
 import os
 import random
 
+from responsesEvaluate import Evaluator
 from Matcher.fuzzyMatcher import FuzzyMatcher
 from Matcher.wordWeightMatcher import WordWeightMatcher
 from Matcher.matcher import Matcher
@@ -46,6 +47,11 @@ def matcherTesting(matcherType, sort=False):
         res = json.load(open(os.path.join("data/processed/reply/",str(int(index/1000))+'.json'),'r',encoding='utf-8'))
         targetId = index % 1000
         #randomId = random.randrange(0,len(res[targetId]))
+
+        evaluator = Evaluator()
+        reply,grade = evaluator.getBestResponse(res[targetId])
+        print(reply)
+        print(grade)
 
         for content in res[targetId]:
             print(content["Content"])
