@@ -8,6 +8,7 @@ Bot: 你好啊，旅行者，讓我們來聊聊八卦吧 o_o
 
 為什麼李嚴要炸三隻蝦
 Bot: 一隻給小當家、一隻給及弟，另一隻給誰我不能說
+
 overwatch是不是過譽了
 Bot: overhyped overrated overmarketed 自己選
 
