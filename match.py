@@ -49,13 +49,10 @@ def matcherTesting(matcherType, sort=False):
         #randomId = random.randrange(0,len(res[targetId]))
 
         evaluator = Evaluator()
-        reply,grade = evaluator.getBestResponse(res[targetId])
-        print(reply)
-        print(grade)
-
-        for content in res[targetId]:
-            print(content["Content"])
-
+        candiates = evaluator.getBestResponse(responses=res[targetId],topk=5,debugMode=True)
+        print("以下是相似度前 5 高的回應")
+        for candiate in candiates:
+            print("%s %f" % (candiate[0],candiate[1]))
 
 def woreWeightMatch():
 

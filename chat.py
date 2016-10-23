@@ -1,8 +1,10 @@
 from responsesEvaluate import Evaluator
 
 import match
+
 import json
 import os
+import random
 import logging
 
 def main():
@@ -19,8 +21,6 @@ class GossipBot(object):
         self.matcher = match.getMatcher("Fuzzy")
         self.evaluator = Evaluator()
         self.testSegment()
-        logging.basicConfig(level=logging.WARNING) #若發生錯誤需要 DEBUG 請更改為 INFO
-
 
     def testSegment(self):
         logging.info("測試斷詞模塊中")
@@ -46,8 +46,12 @@ class GossipBot(object):
         else:
             res = json.load(open(os.path.join("data/processed/reply/",str(int(index/1000))+'.json'),'r',encoding='utf-8'))
             targetId = index % 1000
-            reply,grade = self.evaluator.getBestResponse(res[targetId])
+            candiates = self.evaluator.getBestResponse(res[targetId],topk=3)
+            reply = self.randomPick(candiates)
             return reply
+
+    def randomPick(self, answers):
+        return answers[random.randrange(0,len(answers))][0]
 
 if __name__=="__main__":
     main()

@@ -13,8 +13,10 @@ Bot: overhyped overrated overmarketed 自己選
 Bot: 咖哩飯 咖喱飯 還有咖哩飯
 夏林清守得住街亭嗎
 Bot: 揮淚被停職 你說呢
-要怎麼跟正妹搭訕
-Bot: 我想教你但是不能po文 哈哈
+初音只是個軟體嗎
+Bot: 初音是軟體 但是初音不只是個軟體
+overwatch是不是過氣了
+Bot: 問ow過氣的話題是不是過氣的話題
 
 ```
 ## 類別說明
