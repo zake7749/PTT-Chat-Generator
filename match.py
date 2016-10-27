@@ -8,9 +8,9 @@ from Matcher.wordWeightMatcher import WordWeightMatcher
 from Matcher.matcher import Matcher
 
 def main():
-    matcherTesting("Fuzzy")
+    matcherTesting("Fuzzy",removeStopWords=False)
 
-def getMatcher(matcherType,sort=False):
+def getMatcher(matcherType,removeStopWords=False):
 
     """
     回傳初始完畢的 Matcher
@@ -26,7 +26,7 @@ def getMatcher(matcherType,sort=False):
     if matcherType == "WordWeight":
         return woreWeightMatch()
     elif matcherType == "Fuzzy":
-        return fuzzyMatch(sort)
+        return fuzzyMatch(removeStopWords)
     elif matcherType == "Vectorize":
         pass #TODO
     elif matcherType == "DeepLearning":
@@ -35,12 +35,12 @@ def getMatcher(matcherType,sort=False):
         print("[Error]: Invailded type.")
         exit()
 
-def matcherTesting(matcherType, sort=False):
+def matcherTesting(matcherType,removeStopWords=False):
 
-    matcher = getMatcher(matcherType,sort)
+    matcher = getMatcher(matcherType,removeStopWords)
     while True:
         query = input("隨便說些什麼吧: ")
-        title,index = matcher.match(query,sort)
+        title,index = matcher.match(query)
         sim = matcher.getSimilarity()
         print("最為相似的標題是 %s ，相似度為 %d " % (title,sim))
 
@@ -61,12 +61,15 @@ def woreWeightMatch():
     weightMatcher.initialize()
     return weightMatcher
 
-def fuzzyMatch(sort=False):
-    fuzzyMatcher = FuzzyMatcher(segLib="Taiba")
+def fuzzyMatch(cleansw=False):
+
+    fuzzyMatcher = FuzzyMatcher(segLib="Taiba",removeStopWords=cleansw)
     fuzzyMatcher.loadTitles(path="data/Titles.txt")
-    if sort:
-        fuzzyMatcher.TitlesSegmentation()
+
+    if cleansw:
+        fuzzyMatcher.TitlesSegmentation(cleansw)
         fuzzyMatcher.joinTitles()
+
     return fuzzyMatcher
 
     #load a custom user dictionary.

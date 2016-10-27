@@ -124,9 +124,10 @@ class Evaluator(Matcher):
         for i in range(0, len(self.segResponses)):
 
             wordCount = len(self.segResponses[i])
+            sourceCount = len(self.responses[i])
             meanful = 0
 
-            if wordCount == 0: # 該回覆全為停用詞，無意義
+            if wordCount == 0 or sourceCount > 25:
                 continue
 
             cur_grade = 0.

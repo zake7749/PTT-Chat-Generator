@@ -25,7 +25,8 @@ class WordWeightMatcher(Matcher):
         logging.info("初始化模塊中...")
         self.TitlesSegmentation()
         self.buildWordDictionary()
-        #self.loadStopWords("data/stopwords/chinese_sw.txt")
+        self.loadStopWords("data/stopwords/chinese_sw.txt")
+        self.loadStopWords("data/stopwords/specialMarks.txt")
         self.calculateWeight()
         logging.info("初始化完成 :>")
 
@@ -49,9 +50,6 @@ class WordWeightMatcher(Matcher):
         for word,count in self.wordDictionary.items():
             self.wordWeights[word] = -1 * math.log10(count/self.totalWords)
         logging.info("詞統計完成")
-
-
-
 
     def getCooccurrence(self, q1, q2):
 
@@ -79,7 +77,10 @@ class WordWeightMatcher(Matcher):
         segQuery = [word for word in self.wordSegmentation(query)
                     if word not in self.stopwords]
 
-        for index,title in enumerate(self.titles):
+        for index,title in enumerate(self.segTitles):
+
+            if len(title) == 0:
+                continue
 
             allWordsWeight = 0.
             coWordsWeight = 0.
@@ -95,7 +96,6 @@ class WordWeightMatcher(Matcher):
             for word in segQuery:
                 if word not in coWords:
                     allWordsWeight += self.getWordWeight(word)
-
             similarity = coWordsWeight/allWordsWeight
 
             if similarity > max_similarity:

@@ -74,10 +74,13 @@ class Matcher(object):
         else:
             return jieba.cut(string,cut_all=True)
 
-    def TitlesSegmentation(self):
+    def TitlesSegmentation(self, cleanStopwords=False):
 
         """
         將 self.titles 斷詞後的結果輸出，並儲存於 self.segTitles
+
+        Args:
+            - cleanStopwords: 是否要清除標題中的停用詞
         """
 
         logging.info("正準備將 titles 斷詞")
@@ -89,9 +92,12 @@ class Matcher(object):
             self.segTitles = []
             for title in self.titles:
 
-                #clean = [word for word in self.wordSegmentation(title)
-                #        if word not in self.stopwords]
-                self.segTitles.append(self.wordSegmentation(title))
+                if cleanStopwords:
+                    clean = [word for word in self.wordSegmentation(title)
+                            if word not in self.stopwords]
+                    self.segTitles.append(clean)
+                else:
+                    self.segTitles.append(self.wordSegmentation(title))
 
                 count += 1
                 if count % 1000 == 0:
@@ -107,5 +113,9 @@ class Matcher(object):
                 for line in seg_title:
                     line = line.strip('\n')
                     seg = line.split()
+
+                    if cleanStopwords:
+                        seg = [word for word in seg
+                               if word not in self.stopwords]
                     self.segTitles.append(seg)
                 logging.info("%d 個標題已完成載入" % len(self.segTitles))
