@@ -5,8 +5,9 @@ import os
 def main():
 
     Filter = ArticleFilter()
-    #Filter.load_processed_corpus()
-    Filter.process_raw_data("data/raw/",is_dir=True,to_one_file=True)
+    Filter.load_processed_corpus()
+    #Filter.process_raw_data("data/raw/",is_dir=True,to_one_file=True,one_file_name="CorpusPatch2.json")
+    #Filter.merge_coprus()
 
     Filter.print_titles()
     Filter.print_response()
@@ -74,19 +75,24 @@ class ArticleFilter(object):
             with open("data/processed/" + one_file_name,'w', encoding='utf-8') as op:
                 op.write(json.dumps(total, indent=4, ensure_ascii=False))
 
-    def roclean_corpus(self):
+    def reclean_corpus(self):
         pass
 
     def merge_coprus(self, path="data/processed/"):
 
-        corpus_names = [name for name in os.listdir(path) if not name.startswith(".")]
+        logging.info("即將進行語料庫的合併")
+        corpus_names = [name for name in os.listdir(path)
+                        if not name.startswith(".")
+                        and name != "reply"]
         all_corpus = []
         for corpus_name in corpus_names:
             with open(os.path.join(path, corpus_name),'r', encoding='utf-8') as data:
                 c = json.load(data)
+                logging.info("已載入" + corpus_name)
                 all_corpus += c
         with open("data/processed/all_corpus.json", 'w', encoding='utf-8') as op:
             op.write(json.dumps(all_corpus, indent=4, ensure_ascii=False))
+            logging.info("合併完成，輸出至"  + path + "all_corpus.json")
 
     def load_processed_corpus(self, path="data/processed/"):
 
@@ -97,8 +103,9 @@ class ArticleFilter(object):
         for corpus_name in corpus_names:
             with open(os.path.join(path, corpus_name),'r', encoding='utf-8') as data:
                 c = json.load(data)
+                logging.info("已載入" + corpus_name)
                 self.corpus += c
-                logging.info("已讀入 %d 篇文章" % len(self.corpus))
+                logging.info("並讀入了 %d 篇文章" % len(self.corpus))
 
         logging.info("正在抽取文章與回應")
         for article in self.corpus:

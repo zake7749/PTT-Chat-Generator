@@ -127,7 +127,7 @@ class Evaluator(Matcher):
             sourceCount = len(self.responses[i])
             meanful = 0
 
-            if wordCount == 0 or sourceCount > 25:
+            if wordCount == 0 or sourceCount > 24:
                 continue
 
             cur_grade = 0.

@@ -40,7 +40,7 @@ class GossipBot(object):
     def chatTime(self):
         print("MianBot: 您好，我是你的老朋友眠寶，讓我們來聊聊八卦吧 o_o ")
         while True:
-            query = input("User:")
+            query = input("User: ")
             print("MianBot: " +self.getResponse(query))
 
     def getResponse(self,query,threshold=50):
