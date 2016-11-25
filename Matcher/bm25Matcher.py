@@ -14,12 +14,29 @@ class bestMatchingMatcher(Matcher):
             self.loadStopWords("data/stopwords/chinese_sw.txt")
             self.loadStopWords("data/stopwords/specialMarks.txt")
 
-    def initialize(self):
+    def initialize(self,ngram=1):
 
         assert len(self.titles) > 0, "請先載入短語表"
         self.TitlesSegmentation()
+        for n in range(0,ngram):
+            self.addNgram(n)
         # snownlp setting
         self.sn = SnowNLP(self.segTitles)
+
+    def addNgram(self,n):
+        """
+        擴充 self.seg_titles 為 n-gram
+        """
+        idx = 0
+
+        for seg_list in self.segTitles:
+            ngram = self.generateNgram(n,self.titles[idx])
+            seg_list = seg_list + ngram
+            idx += 1
+
+    def generateNgram(self,n,sentence):
+        return [sentence[i:i+n] for i in range(0,len(sentence)-1)]
+
 
     def joinTitles(self):
         self.segTitles = ["".join(title) for title in self.segTitles]
@@ -50,7 +67,7 @@ class bestMatchingMatcher(Matcher):
 
         #FIXME NEED OPTIMIZE
         best_grade = self.sn.sim(self.segTitles[target_idx])[target_idx]
-        print("BM UPPER BOUND: %d" % best_grade)
+        #print("BM UPPER BOUND: %d" % best_grade)
 
         self.similarity = float(max)/best_grade * 100 #百分制
 
