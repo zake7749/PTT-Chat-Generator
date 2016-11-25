@@ -19,8 +19,8 @@ class GossipBot(object):
     """
     八卦板聊天機器人 ob'_'ov
     """
-    def __init__(self):
-        self.matcher = match.getMatcher("Fuzzy")
+    def __init__(self,match_type="bm25"):
+        self.matcher = match.getMatcher(match_type)
         self.evaluator = Evaluator()
         self.testSegment()
         self.defaultResponse = [

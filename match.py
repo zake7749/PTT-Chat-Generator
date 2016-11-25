@@ -5,10 +5,12 @@ import random
 from responsesEvaluate import Evaluator
 from Matcher.fuzzyMatcher import FuzzyMatcher
 from Matcher.wordWeightMatcher import WordWeightMatcher
+from Matcher.bm25Matcher import bestMatchingMatcher
+
 from Matcher.matcher import Matcher
 
 def main():
-    matcherTesting("Fuzzy",removeStopWords=False)
+    matcherTesting("bm25",removeStopWords=False)
 
 def getMatcher(matcherType,removeStopWords=False):
 
@@ -27,6 +29,8 @@ def getMatcher(matcherType,removeStopWords=False):
         return woreWeightMatch()
     elif matcherType == "Fuzzy":
         return fuzzyMatch(removeStopWords)
+    elif matcherType == "bm25":
+        return bm25()
     elif matcherType == "Vectorize":
         pass #TODO
     elif matcherType == "DeepLearning":
@@ -49,7 +53,7 @@ def matcherTesting(matcherType,removeStopWords=False):
         #randomId = random.randrange(0,len(res[targetId]))
 
         evaluator = Evaluator()
-        candiates = evaluator.getBestResponse(responses=res[targetId],topk=5,debugMode=True)
+        candiates = evaluator.getBestResponse(responses=res[targetId],topk=5,debugMode=False)
         print("以下是相似度前 5 高的回應")
         for candiate in candiates:
             print("%s %f" % (candiate[0],candiate[1]))
@@ -80,6 +84,11 @@ def fuzzyMatch(cleansw=False):
     #fuzzyMatcher.loadStopWords(path="data/stopwords/ptt_words.txt")
     #fuzzyMatcher.loadStopWords(path="data/stopwords/specialMarks.txt")
 
+def bm25():
+
+    bm25Matcher = bestMatchingMatcher()
+    bm25Matcher.loadTitles(path="data/Titles.txt")
+    return bm25Matcher
 
 if __name__ == '__main__':
     main()

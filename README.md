@@ -56,6 +56,7 @@ MianBot: 珍惜身邊的人
 * gensim : 使用詞袋、tfidf、word2vec
 * fuzzywuzzy : 模糊字串比對
   * python-Levenshtein : 用於優化 fuzzywuzzy 計算速度的套件包
+* snownlp : 使用 bm25
 * sentence2vec(非必要)
 
 ## Data
