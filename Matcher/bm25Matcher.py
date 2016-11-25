@@ -4,7 +4,7 @@ from snownlp import SnowNLP
 class bestMatchingMatcher(Matcher):
 
     """
-    基於萊文斯坦距離比對短語相似度
+    基於 bm25 算法取得最佳關聯短語
     """
 
     def __init__(self, segLib="Taiba", removeStopWords=False):
@@ -14,6 +14,9 @@ class bestMatchingMatcher(Matcher):
             self.loadStopWords("data/stopwords/chinese_sw.txt")
             self.loadStopWords("data/stopwords/specialMarks.txt")
 
+    def initialize(self):
+
+        assert len(self.titles) > 0, "請先載入短語表"
         self.TitlesSegmentation()
         # snownlp setting
         self.sn = SnowNLP(self.segTitles)

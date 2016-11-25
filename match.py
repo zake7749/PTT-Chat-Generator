@@ -88,6 +88,7 @@ def bm25():
 
     bm25Matcher = bestMatchingMatcher()
     bm25Matcher.loadTitles(path="data/Titles.txt")
+    bm25Matcher.initialize()
     return bm25Matcher
 
 if __name__ == '__main__':

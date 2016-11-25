@@ -86,7 +86,6 @@ class Matcher(object):
         logging.info("正準備將 titles 斷詞")
 
         count = 0
-
         if not os.path.exists('data/SegTitles.txt'):
 
             self.segTitles = []
