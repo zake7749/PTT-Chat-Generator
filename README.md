@@ -4,7 +4,7 @@
 
 ## 目前成果
 ```
-MianBot: 您好，我是的老朋友眠寶，讓我們來聊聊八卦吧 o_o
+MianBot: 您好，我是你的老朋友眠寶，讓我們來聊聊八卦吧 o_o
 
 User: 為什麼李嚴要炸三隻蝦
 MianBot: 一隻給小當家、一隻給及弟，另一隻給誰我不能說
@@ -44,13 +44,12 @@ MianBot: 珍惜身邊的人
   * `FuzzyMatcher`: 基於 Levenshtein Distance 比對短語相似度
   * `VectorMatcher`: 基於 sentence2vec 比對短語相似度 TODO!
   * `KeywordMatcher`: 基於 tf/idf 比對短語相似度
-  * `bm25Matcher`: 基於 Okapi BM25，目前默認採用該算法進行批配
+  * `bm25Matcher`: 基於 Okapi BM25 (基於 snownlp)，目前默認採用該算法進行批配 
 * `ResponsesEvaluate`: 從推文中挑選出最佳推文
   * `Evaluator`: 基於推文的詞頻來選取最佳回應
   * `ClusteringEvaluator`: 基於聚類來選取最佳回應 TODO !
   
 ## 套件需求
-
 
 * jieba : 中文隱性馬可夫模型斷詞器
 * Taiba : 繁體中文 CRF 斷詞器 （預設使用 Taiba）
@@ -58,7 +57,6 @@ MianBot: 珍惜身邊的人
 * fuzzywuzzy : 模糊字串比對
   * python-Levenshtein : 用於優化 fuzzywuzzy 計算速度的套件包
 * sklearn : 訓練 tfidf、文本特徵分類
-* snownlp : 使用 bm25
 * sentence2vec (非必要)
 
 ## Data
