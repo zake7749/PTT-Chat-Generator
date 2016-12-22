@@ -1,6 +1,7 @@
 import math
 
 from .matcher import Matcher
+from .quickSearch import QuickSearcher
 
 class bestMatchingMatcher(Matcher):
 
@@ -24,6 +25,8 @@ class bestMatchingMatcher(Matcher):
         self.k1 = 1.5
         self.b = 0.75
 
+        self.searcher = QuickSearcher() # 問句篩選
+
         if removeStopWords:
             self.loadStopWords("data/stopwords/chinese_sw.txt")
             self.loadStopWords("data/stopwords/specialMarks.txt")
@@ -35,6 +38,8 @@ class bestMatchingMatcher(Matcher):
         self.TitlesSegmentation() # 將 self.titles 斷詞為  self.segTitles
         #self.calculateIDF() # 依照斷詞後結果, 計算每個詞的 idf value
         self.initBM25()
+        self.searcher.buildInvertedIndex(self.segTitles)
+
 
         """NEED MORE DISCUSSION
         #for n in range(0,ngram):
@@ -137,7 +142,12 @@ class bestMatchingMatcher(Matcher):
         target = ''
         target_idx = -1
 
-        for index in range(self.D):
+        target_index = self.searcher.quickSearch(seg_query) #  只取出必要的 titles
+
+        #for id in target_index:
+        #    print(self.titles[id])
+
+        for index in target_index:
             score = self.sim(seg_query, index)
             if score > max:
                 target_idx = index
