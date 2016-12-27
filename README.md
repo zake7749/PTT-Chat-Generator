@@ -1,4 +1,4 @@
-# PTT GossipBot
+# PTT Chat Generator
 
 本專案的目的在實作一個推文產生器，由使用者輸入一個隨機標題，即能回覆一個恰當的推文，目前仍在進行中 d(`･∀･)b
 
@@ -44,7 +44,7 @@ MianBot: 珍惜身邊的人
   * `FuzzyMatcher`: 基於 Levenshtein Distance 比對短語相似度
   * `VectorMatcher`: 基於 sentence2vec 比對短語相似度 TODO!
   * `KeywordMatcher`: 基於 tf/idf 比對短語相似度
-  * `bm25Matcher`: 基於 Okapi BM25 (基於 snownlp)，目前默認採用該算法進行批配 
+  * `bm25Matcher`: 基於 Okapi BM25 (基於 snownlp)，目前默認採用該算法
 * `ResponsesEvaluate`: 從推文中挑選出最佳推文
   * `Evaluator`: 基於推文的詞頻來選取最佳回應
   * `ClusteringEvaluator`: 基於聚類來選取最佳回應 TODO !
@@ -52,11 +52,10 @@ MianBot: 珍惜身邊的人
 ## 套件需求
 
 * jieba : 中文隱性馬可夫模型斷詞器
-* Taiba : 繁體中文 CRF 斷詞器 （預設使用 Taiba）
+* [Taiba](https://github.com/fann1993814/Taiba) : 繁體中文 CRF 斷詞器 （預設使用 Taiba）
 * gensim : 使用詞袋、tfidf、word2vec
 * fuzzywuzzy : 模糊字串比對
   * python-Levenshtein : 用於優化 fuzzywuzzy 計算速度的套件包
-* sklearn : 訓練 tfidf、文本特徵分類
 * sentence2vec (非必要)
 
 ## Data
@@ -66,7 +65,8 @@ MianBot: 珍惜身邊的人
 * processed_seged: 儲存文章或回應的斷詞結果
 * stopwords: 儲存常用中文停用詞、PTT 停用詞、負面標籤
 * User_info: 基於 raw 的使用者推噓文紀錄
-* Titles.txt: 存放篩選後文章的標題
+* Titles.txt: 存放篩選後的文章標題
+* SegTitles.txt: 存放已完成斷詞的篩選後文章標題
 
 ## 實驗簡述
 
