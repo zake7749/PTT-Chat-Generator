@@ -72,4 +72,10 @@ MianBot: 珍惜身邊的人
 
 1. 使用 PTT-Crawler 爬取文章後放置於 "data/raw/"
 2. 使用 filter.py 從原始資料裡挑選出需要的資料
+ - `ArticleFilter.load_processed_corpus()`: 用於載入先前處理好的語料(會載入 data/processed/ 中所有檔案)
+ - `ArticleFilter.process_raw_data()`: 對 "data/raw/" 中的原始資料進行處理(如去除特定tag，過濾敏感回應等) 
+ - `ArticleFilter.print_titles()`: 輸出處理好的文章標題
+ - `ArticleFilter.print_response()` : 輸出處理好的文章回應
+ - 為維持文章結構的一致性，使用 `print_titles()` 建議也呼叫 `print_response()`
 3. 使用 match.py 測試匹配結果
+ - 因為斷詞文件 (SegTitles.txt) 有些 `matcher` 不會用到，所以更新 Corpus 後請記得刪除已斷詞文件並重新斷詞
