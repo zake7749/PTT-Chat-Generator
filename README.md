@@ -58,7 +58,8 @@ MianBot: 珍惜身邊的人
   * python-Levenshtein : 用於優化 fuzzywuzzy 計算速度的套件包
 * sentence2vec (非必要)
 
-## Data
+## Data 說明
+
 * raw: 儲存PTT-Crawler爬取的原始資料
 * processed: 儲存已經篩選過的文章（如濾除特定標籤、使用者）
   * reply: 儲存文章回應，每 1000 筆為一個檔案（目前未上傳至 Github）
@@ -79,3 +80,8 @@ MianBot: 珍惜身邊的人
  - 為維持文章結構的一致性，使用 `print_titles()` 建議也呼叫 `print_response()`
 3. 使用 match.py 測試匹配結果
  - 因為斷詞文件 (SegTitles.txt) 有些 `matcher` 不會用到，所以更新 Corpus 後請記得刪除已斷詞文件並重新斷詞
+ 
+## 測試用資料集
+
+請前往[這邊](https://drive.google.com/file/d/0BxfXm7KkNKc-RkY2Z1pONUlqODg/view?usp=sharing)下載，解壓縮後放置於 `data` 資料夾下，
+`reply.rar` 解壓縮後的回覆請放置於 `data/processed` 中。
