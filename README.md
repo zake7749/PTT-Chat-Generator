@@ -52,7 +52,6 @@ MianBot: 珍惜身邊的人
 ## 套件需求
 
 * jieba : 中文隱性馬可夫模型斷詞器
-* [Taiba](https://github.com/fann1993814/Taiba) : 繁體中文 CRF 斷詞器 （預設使用 Taiba）
 * gensim : 使用詞袋、tfidf、word2vec
 * fuzzywuzzy : 模糊字串比對
   * python-Levenshtein : 用於優化 fuzzywuzzy 計算速度的套件包
