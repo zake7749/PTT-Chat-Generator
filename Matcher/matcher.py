@@ -68,11 +68,15 @@ class Matcher(object):
         return self.similarity
 
     def wordSegmentation(self, string):
-
+        
+        tp = None
+        
         if self.useTaiba:
-            return Taiba.lcut(string,CRF=True)
+            tp = Taiba.lcut(string,CRF=True) # list
         else:
-            return jieba.cut(string,cut_all=True)
+            tp = jieba.cut(string,cut_all=True) # generator
+            
+        return [q for q in tp]
 
     def TitlesSegmentation(self, cleanStopwords=False):
 
