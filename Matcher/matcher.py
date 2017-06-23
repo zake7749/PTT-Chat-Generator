@@ -1,8 +1,13 @@
 import logging
 import os
-
 import jieba
-import Taiba
+
+try:
+    import Taiba
+except:
+    # It's ok now.
+    # The default word segment module have changed to jieba.
+    pass
 
 class Matcher(object):
 
@@ -11,7 +16,7 @@ class Matcher(object):
     回傳語料集中最相似的一個句子。
     """
 
-    def __init__(self, segLib="Taiba"):
+    def __init__(self, segLib="jieba"):
 
         logging.basicConfig(format='%(asctime)s : %(threadName)s : %(levelname)s : %(message)s', level=logging.INFO)
         self.titles = [] # 欲進行匹配的所有標題
@@ -22,8 +27,10 @@ class Matcher(object):
 
         if segLib == "Taiba":
             self.useTaiba = True
+            logging.info("[Matcher] : Select Taiba for word segment.")
         else:
             self.useTaiba = False
+            logging.info("[Matcher] : Select jieba for word segment.")
 
     def jiebaCustomSetting(self, dict_path, usr_dict_path):
 
@@ -68,14 +75,14 @@ class Matcher(object):
         return self.similarity
 
     def wordSegmentation(self, string):
-        
+
         tp = None
-        
+
         if self.useTaiba:
             tp = Taiba.lcut(string,CRF=True) # list
         else:
             tp = jieba.cut(string,cut_all=True) # generator
-            
+
         return [q for q in tp]
 
     def TitlesSegmentation(self, cleanStopwords=False):

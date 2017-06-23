@@ -60,14 +60,14 @@ def matcherTesting(matcherType,removeStopWords=False):
 
 def woreWeightMatch():
 
-    weightMatcher = WordWeightMatcher(segLib="Taiba")
+    weightMatcher = WordWeightMatcher(segLib="jieba")
     weightMatcher.loadTitles(path="data/Titles.txt")
     weightMatcher.initialize()
     return weightMatcher
 
 def fuzzyMatch(cleansw=False):
 
-    fuzzyMatcher = FuzzyMatcher(segLib="Taiba",removeStopWords=cleansw)
+    fuzzyMatcher = FuzzyMatcher(segLib="jieba",removeStopWords=cleansw)
     fuzzyMatcher.loadTitles(path="data/Titles.txt")
 
     if cleansw:

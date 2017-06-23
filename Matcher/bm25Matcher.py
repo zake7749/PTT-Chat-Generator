@@ -9,7 +9,7 @@ class bestMatchingMatcher(Matcher):
     基於 bm25 算法取得最佳關聯短語
     """
 
-    def __init__(self, segLib="Taiba", removeStopWords=False):
+    def __init__(self, segLib="jieba", removeStopWords=False):
         super().__init__(segLib)
 
         self.cleanStopWords = removeStopWords
@@ -39,7 +39,6 @@ class bestMatchingMatcher(Matcher):
         #self.calculateIDF() # 依照斷詞後結果, 計算每個詞的 idf value
         self.initBM25()
         self.searcher.buildInvertedIndex(self.segTitles)
-
 
         """NEED MORE DISCUSSION
         #for n in range(0,ngram):

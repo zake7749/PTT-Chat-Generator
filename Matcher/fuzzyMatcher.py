@@ -8,7 +8,7 @@ class FuzzyMatcher(Matcher):
     基於萊文斯坦距離比對短語相似度
     """
 
-    def __init__(self, segLib="Taiba", removeStopWords=False):
+    def __init__(self, segLib="jieba", removeStopWords=False):
         super().__init__(segLib)
         self.cleanStopWords = removeStopWords
         if removeStopWords:

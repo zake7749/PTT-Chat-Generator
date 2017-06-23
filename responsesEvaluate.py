@@ -13,7 +13,7 @@ class Evaluator(Matcher):
     """
     讀入一串推文串列，計算出當中可靠度最高的推文
     """
-    def __init__(self,segLib="Taiba"):
+    def __init__(self,segLib="jieba"):
 
         #FIXME 若「線上版本」受記憶體容量限制，需考慮更換為 jieba!
         super().__init__(segLib)

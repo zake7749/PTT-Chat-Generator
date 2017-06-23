@@ -1,11 +1,11 @@
-from responsesEvaluate import Evaluator
-
-import match
-
 import json
 import os
 import random
 import logging
+
+import match
+
+from responsesEvaluate import Evaluator
 
 def main():
 
