@@ -82,7 +82,7 @@ MianBot: 珍惜身邊的人
  
 ## 測試用資料集
 
-* 請前往[這邊](https://drive.google.com/file/d/0BxfXm7KkNKc-RkY2Z1pONUlqODg/view?usp=sharing)下載，解壓縮後放置於 `data` 資料夾下，
+* 請前往[這邊](https://drive.google.com/file/d/11JlbmYmuu00TfmfdAfyoGK_E3VMp8Vd_/view)下載，解壓縮後放置於 `data` 資料夾下，
 `reply.rar` 解壓縮後的回覆請放置於 `data/processed` 中。
 
 * 如果只想特別使用抽取完畢的問答配對，可以前往 [PTT 中文語料](https://github.com/zake7749/Gossiping-Chinese-Corpus) 了解進一步的資訊 :>
