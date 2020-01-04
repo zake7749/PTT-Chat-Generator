@@ -8,5 +8,5 @@ class FileReader(object):
 
     def get_file_list(self, path):
 
-        filenames = [name for name in os.listdir(path) if name[0] != '.')]
+        filenames = [name for name in os.listdir(path) if name[0] != '.']
         return filenames
