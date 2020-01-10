@@ -52,13 +52,19 @@ class WordWeightMatcher(Matcher):
         logging.info("詞統計完成")
 
     def getCooccurrence(self, q1, q2):
+        """Get cooccurrence from two iterable objects
 
-        #TODO NEED OPTIMIZE!!!!
-        res = []
-        for word in q1:
-            if word in q2:
-                res.append(word)
-        return res
+        Args:
+            q1 (Iterable): first iterable object
+            q2 (Iterable): second iterable object
+
+        Returns:
+            cooccurrence (list): intersection of q1 and q2
+        
+        NOTE: something different to q1 in q2,
+              previous version may have duplicate elements
+        """
+        return list(set(q1).intersection(q2))
 
     def getWordWeight(self, word, n=1):
         #TODO FIX N
