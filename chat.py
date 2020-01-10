@@ -48,7 +48,7 @@ class GossipBot(object):
         title,index = self.matcher.match(query)
         sim = self.matcher.getSimilarity()
         if sim < threshold:
-            return self.defaultResponse[random.randrange(0,len(self.defaultResponse))]
+            random.choice(self.defaultResponse)
         else:
             res = json.load(open(os.path.join("data/processed/reply/",str(int(index/1000))+'.json'),'r',encoding='utf-8'))
             targetId = index % 1000
@@ -58,7 +58,7 @@ class GossipBot(object):
 
     def randomPick(self, answers):
         try:
-            answer = answers[random.randrange(0,len(answers))][0]
+            answer = random.choice(answers)[0]
         except:
             answer = "沒有資料"
         return answer
@@ -66,8 +66,8 @@ class GossipBot(object):
     def randomTalks(self, num=100):
         with open("data/Titles.txt",'r',encoding='utf-8') as data:
             titles = [line.strip('\n') for line in data]
-        for i in range(0,num):
-            query = titles[random.randrange(0,len(titles))]
+        for _ in range(num):
+            query = random.choice(titles)
             print("User: " + query)
             print("MianBot: " +self.getResponse(query) + "\n")
 
